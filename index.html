@@ -14,7 +14,7 @@
     --ink: #2b241a;
     --cream: #f7f1e4;
     --overlay: rgba(20,16,10,0.62);
-    --overlay-soft: rgba(20,16,10,0.42);
+    --overlay-soft: rgba(20,16,10,0.30);
   }
 
   *{ box-sizing: border-box; }
@@ -44,11 +44,12 @@
     background-color: var(--ink);
   }
 
+  /* Voile plus clair pour laisser apparaitre le violet du fond */
   section::before{
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(15,12,8,0.58) 0%, rgba(15,12,8,0.66) 100%);
+    background: linear-gradient(180deg, rgba(15,12,8,0.26) 0%, rgba(15,12,8,0.36) 100%);
     z-index: 0;
   }
 
@@ -63,7 +64,8 @@
     max-width: 560px;
     width: 100%;
     background: var(--overlay-soft);
-    backdrop-filter: blur(2px);
+    /* backdrop-filter retire : c'etait la principale cause des lags (flou recalcule sur
+       chaque frame derriere une grande image de fond, sur 4 sections) */
   }
 
   .ornament{
@@ -287,6 +289,16 @@
     color: var(--gold-light);
   }
 
+  .zdek-tag{
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.06em;
+    color: var(--gold-light);
+    margin-top: 0.3rem;
+    margin-bottom: 0.2rem;
+  }
+
   .map-btn{
     display: inline-flex;
     align-items: center;
@@ -344,7 +356,6 @@
     justify-content: center;
     cursor: pointer;
     z-index: 60;
-    backdrop-filter: blur(2px);
     transition: background 0.3s ease;
   }
 
@@ -368,7 +379,9 @@
     </div>
   </div>
   <div id="introVideo">
-    <video id="mainVideo" src="asma.mp4" playsinline></video>
+    <!-- preload="metadata" au lieu de "auto" : la video ne se telecharge qu'au moment du tap,
+         ce qui evite qu'elle plombe le chargement initial de la page -->
+    <video id="mainVideo" src="asma.mp4" playsinline preload="metadata"></video>
   </div>
 </div>
 
@@ -411,9 +424,19 @@
       btn.classList.add('muted');
     }
   }
+
+  // Affiche "INVITATION ZDEK" tant qu'on est avant le 08/11/2026, sinon le texte normal
+  (function(){
+    var weddingDate = new Date('2026-11-08T00:00:00');
+    var el = document.getElementById('mainEyebrow');
+    if (el && new Date() < weddingDate){
+      el.textContent = 'INVITATION ZDEK';
+    }
+  })();
 </script>
 
-<audio id="bgMusic" src="musique.mp3" loop preload="auto"></audio>
+<!-- preload="none" : la musique ne se charge que quand on la lance reellement (fin de la video) -->
+<audio id="bgMusic" src="musique.mp3" loop preload="none"></audio>
 
 <button id="musicToggle" onclick="toggleMusic()" aria-label="Activer ou couper la musique">
   <svg class="icon-playing" viewBox="0 0 24 24" fill="none" stroke="#e6cd93" stroke-width="1.6"><path d="M9 6v12l-4-3H2V9h3l4-3Z" fill="#e6cd93" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a8.5 8.5 0 0 1 0 12"/></svg>
@@ -436,7 +459,7 @@
 <!-- ============ INVITATION ============ -->
 <section id="invitation">
   <div class="frame">
-    <div class="eyebrow">FAIRE-PART DE MARIAGE</div>
+    <div class="eyebrow" id="mainEyebrow">FAIRE-PART DE MARIAGE</div>
     <p class="families">
       La famille <b>Jarroudi</b><br>
       &amp;<br>
@@ -457,6 +480,7 @@
 <section id="details">
   <div class="frame">
     <div class="eyebrow">RENDEZ-VOUS</div>
+    <div class="zdek-tag">Zdek</div>
     <div class="date-block">
       <div class="date-num">08</div>
       <div class="date-side">
